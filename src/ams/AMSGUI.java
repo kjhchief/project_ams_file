@@ -28,6 +28,7 @@ public class AMSGUI {
 		frame.pwdTF.setText("1234");
 		frame.InputMoneyTF.setText("10000");
 //		frame.rentMoneyTF.setText("5000");
+		// 깃 푸시푸시푸시해줘~
 
 	}
 
