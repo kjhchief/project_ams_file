@@ -10,7 +10,7 @@ import java.io.IOException;
 public class AMSGUI {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-
+		// 깃 테스트1
 		AccountRepository repository = new ObjectAccountRepository();
 		AccountFrame frame = new AccountFrame("HOONI-BANK AMS", repository);
 		// 가상데이터 등록
