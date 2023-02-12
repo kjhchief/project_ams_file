@@ -15,8 +15,8 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 public class ObjectAccountRepository implements AccountRepository {
-	
-	/** 파일 저장 경로 */
+	// 최신최신
+	// 최신최신
 	private static final String FILE_PATH = "accounts.ser";
 	
 	private Map<String, Account> map;
