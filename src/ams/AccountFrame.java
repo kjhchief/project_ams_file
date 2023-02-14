@@ -354,7 +354,12 @@ public class AccountFrame extends Frame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				try {
+					findByName();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -451,6 +456,14 @@ public class AccountFrame extends Frame {
 			contentsArea.append("계좌가 삭제되었습니다..\n");
 		}
 
+	}
+	
+	// 이름으로 조회
+	private void findByName() throws IOException {
+		String name = nameTF.getText();
+		List<Account> account = repository.findByName(name);
+		showMessage(account.toString());
+		
 	}
 
 	// 계좌 등록 중복 방지
