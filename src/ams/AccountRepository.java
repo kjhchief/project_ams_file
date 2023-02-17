@@ -31,8 +31,5 @@ public interface AccountRepository {
 	
 	/** 계좌번호로 계좌 삭제*/
 	public boolean removeAccount(String number) throws IOException;
-	
-
-	
 
 }
