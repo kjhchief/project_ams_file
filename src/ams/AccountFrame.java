@@ -22,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
@@ -308,7 +309,7 @@ public class AccountFrame extends Frame {
 				// 등록된 계좌 쓰기.
 			} else if ((choice.getSelectedItem()).equals("마이너스계좌")) {
 				long rentMoney = Long.parseLong(rentMoneyTF.getText());
-				Calendar now = Calendar.getInstance();
+				Date now = new Date(System.currentTimeMillis());
 				account = new MinusAccount(accountNum, name, pwd, money, rentMoney, now);
 			}
 			

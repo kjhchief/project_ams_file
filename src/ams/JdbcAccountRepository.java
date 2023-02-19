@@ -2,6 +2,7 @@ package ams;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +22,6 @@ public class JdbcAccountRepository implements AccountRepository {
 	public JdbcAccountRepository() throws ClassNotFoundException, SQLException {
 		Class.forName(driver);
 		con = DriverManager.getConnection(url, user, password);
-
 	}
 
 	@Override
@@ -30,8 +30,9 @@ public class JdbcAccountRepository implements AccountRepository {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			StringBuilder sb = new StringBuilder(); // 자체편집 가능해서 이거 쓴다고 함. 뭐지? 왜??
-			sb.append(" SELECT COUNT(*) cnt").append(" FROM accounts");
+			StringBuilder sb = new StringBuilder(); 
+			sb.append(" SELECT COUNT(*) cnt")
+			.append(" FROM accounts");
 			pstmt = con.prepareStatement(sb.toString());
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
@@ -54,13 +55,14 @@ public class JdbcAccountRepository implements AccountRepository {
 		return count;
 	}
 
+	// 계좌 등록
 	@Override
 	public void addAccount(Account account) throws IOException {
 		int count = 0;
 		PreparedStatement pstmt = null;
 		try {
 			StringBuilder sb = new StringBuilder(); // 자체편집 가능해서 이거 쓴다고 함. 뭐지? 왜??
-			sb.append(" INSERT INTO accounts").append(" VALUES (?, ?, ?, ?, ?)");
+			sb.append(" INSERT INTO accounts").append(" VALUES (?, ?, ?, ?, ?, ?)");
 			pstmt = con.prepareStatement(sb.toString());
 			pstmt.setString(1, account.getAccountNumber());
 			pstmt.setString(2, account.getAccountOwner());
@@ -69,9 +71,11 @@ public class JdbcAccountRepository implements AccountRepository {
 			if (account instanceof MinusAccount) {
 				MinusAccount ma = (MinusAccount) account;
 				pstmt.setLong(5, ma.getRentMoney());
+				pstmt.setDate(6, ma.getRentDate());
 
 			} else {
 				pstmt.setLong(5, 0);
+				pstmt.setDate(6, null);
 			}
 			count = pstmt.executeUpdate();
 			System.out.println(count + " 계좌 등록 완료");
@@ -90,24 +94,30 @@ public class JdbcAccountRepository implements AccountRepository {
 
 	}
 
+	// 전체 목록 조회
 	@Override
 	public List<Account> getAccounts() throws IOException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
 			con = DriverManager.getConnection(url, user, password);
-			StringBuilder sb = new StringBuilder(); // 자체편집 가능해서 이거 쓴다고 함. 뭐지? 왜??
-			sb.append(" SELECT department_id, department_name, manager_id, location_id").append(" FROM departments")
-					.append(" ORDER BY department_id");
+			StringBuilder sb = new StringBuilder(); 
+			sb.append(" SELECT account_num, owner_name, passwd, rest_money, borrow_money, borrow_date")
+			.append(" FROM accounts")
+			.append(" ORDER BY account_num");
 			pstmt = con.prepareStatement(sb.toString());
 
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
-				int departmentId = rs.getInt("department_id");
-				String departmentName = rs.getString("department_name");
-				int managerId = rs.getInt("manager_id");
-				int locationId = rs.getInt("location_id");
-				System.out.println(departmentId + "\t" + departmentName + "\t" + managerId + "\t" + locationId);
+				String accountNum = rs.getString("account_num");
+				String ownerName = rs.getString("owner_name");
+				int passWd = rs.getInt("passwd");
+				long restMoney = rs.getLong("rest_money");
+				long borrowMoney = rs.getLong("borrow_money");
+				Date borrowDate = rs.getDate("borrow_date");
+				
+				System.out.println(accountNum + " || " + ownerName + " || " + passWd + " || " + restMoney + " || " + borrowMoney + " || " + borrowDate);
+				
 			}
 
 		} catch (SQLException e) {
@@ -118,8 +128,6 @@ public class JdbcAccountRepository implements AccountRepository {
 					rs.close();
 				if (pstmt != null)
 					pstmt.close();
-				if (con != null)
-					con.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,11 +140,11 @@ public class JdbcAccountRepository implements AccountRepository {
 	public Account findByNumber(String number) throws IOException {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		Account account;
 		try {
 			StringBuilder sb = new StringBuilder();
-			sb.append(" SELECT account_num, owner_name, passwd, rest_money, borrow_money").append(" FROM accounts")
-					.append(" WHERE account_num LIKE ?");
+			sb.append(" SELECT account_num, owner_name, passwd, rest_money, borrow_money, borrow_date")
+			.append(" FROM accounts")
+			.append(" WHERE account_num LIKE ?");
 			pstmt = con.prepareStatement(sb.toString());
 			pstmt.setString(1, "%" + number + "%");
 
@@ -147,13 +155,9 @@ public class JdbcAccountRepository implements AccountRepository {
 				int passWd = rs.getInt("passwd");
 				long restMoney = rs.getLong("rest_money");
 				long rentmoney = rs.getLong("borrow_money");
-				account = new Account(accountNum, ownerName, passWd, restMoney);
-				if(account instanceof MinusAccount) {
-					MinusAccount ma = (MinusAccount) account;
-					// Calander 생성
-					account = new MinusAccount(accountNum, ownerName, passWd, restMoney, rentmoney);
-				}
-				return account;
+				Date borrowDate = rs.getDate("borrow_date");
+				
+				System.out.println(accountNum + " || " + ownerName + " || " + passWd + " || " + restMoney + " || " + rentmoney + " || " + borrowDate);
 				
 			} 
 
@@ -175,14 +179,84 @@ public class JdbcAccountRepository implements AccountRepository {
 
 	@Override
 	public List<Account> findByName(String name) throws IOException {
-		// TODO Auto-generated method stub
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			StringBuilder sb = new StringBuilder();
+			sb.append(" SELECT account_num, owner_name, passwd, rest_money, borrow_money, borrow_date")
+			.append(" FROM accounts")
+			.append(" WHERE owner_name LIKE ?");
+			pstmt = con.prepareStatement(sb.toString());
+			pstmt.setString(1, "%" + name + "%");
+
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				String accountNum = rs.getString("account_num");
+				String ownerName = rs.getString("owner_name");
+				int passWd = rs.getInt("passwd");
+				long restMoney = rs.getLong("rest_money");
+				long rentmoney = rs.getLong("borrow_money");
+				Date borrowDate = rs.getDate("borrow_date");
+				
+				System.out.println(accountNum + " || " + ownerName + " || " + passWd + " || " + restMoney + " || " + rentmoney + " || " + borrowDate);
+				
+			} 
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 
 	@Override
-	public boolean removeAccount(String number) throws IOException {
-		// TODO Auto-generated method stub
+	public boolean removeAccount(String number) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = DriverManager.getConnection(url, user, password);
+			StringBuilder sb = new StringBuilder(); 
+			sb.append(" DELETE FROM accounts")
+       		  .append(" WHERE account_num = ?"); 
+			pstmt = con.prepareStatement(sb.toString());
+			pstmt.setString(1, number);
+			int count = pstmt.executeUpdate();
+			System.out.println(count + " 개의 계좌가 삭제되었습니다.");
+			pstmt.close();
+			return count > 0; // 삭제가 성공한 경우 true 반환
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt != null) pstmt.close();	
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return false;
 	}
+	
+	public void disConnect() {
+		if(con != null)
+			try {
+				con.close();
+				System.out.println("<<<<< Oracle 데이터베이스 연결 종료 >>>>>");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
 
 }

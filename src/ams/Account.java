@@ -8,10 +8,7 @@ import java.io.Serializable;
  */
 //클래스에 선언하는 접근제한자 : 생략, public
 public class Account implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7033026751773125972L;
+	private static final long serialVersionUID = 1L;
 
 	// 은행이름 (상수)
 	public final static String BANK_NAME = "이젠뱅크";
