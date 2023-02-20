@@ -6,6 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/kjhch/Desktop/nowon_ezen/back-end/workspace/project_ams_file/src/lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="C:/ezen-academy/workspace/project_ams_file/src/lib/ojdbc6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

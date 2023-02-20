@@ -61,7 +61,7 @@ public class JdbcAccountRepository implements AccountRepository {
 		int count = 0;
 		PreparedStatement pstmt = null;
 		try {
-			StringBuilder sb = new StringBuilder(); // 자체편집 가능해서 이거 쓴다고 함. 뭐지? 왜??
+			StringBuilder sb = new StringBuilder(); 
 			sb.append(" INSERT INTO accounts").append(" VALUES (?, ?, ?, ?, ?, ?)");
 			pstmt = con.prepareStatement(sb.toString());
 			pstmt.setString(1, account.getAccountNumber());
@@ -149,7 +149,7 @@ public class JdbcAccountRepository implements AccountRepository {
 			pstmt.setString(1, "%" + number + "%");
 
 			rs = pstmt.executeQuery();
-			if (rs.next()) {
+			while (rs.next()) {
 				String accountNum = rs.getString("account_num");
 				String ownerName = rs.getString("owner_name");
 				int passWd = rs.getInt("passwd");
@@ -191,7 +191,7 @@ public class JdbcAccountRepository implements AccountRepository {
 
 			rs = pstmt.executeQuery();
 			
-			if (rs.next()) {
+			while (rs.next()) {
 				String accountNum = rs.getString("account_num");
 				String ownerName = rs.getString("owner_name");
 				int passWd = rs.getInt("passwd");
@@ -221,19 +221,18 @@ public class JdbcAccountRepository implements AccountRepository {
 
 	@Override
 	public boolean removeAccount(String number) {
-		Connection con = null;
 		PreparedStatement pstmt = null;
 		try {
-			con = DriverManager.getConnection(url, user, password);
 			StringBuilder sb = new StringBuilder(); 
 			sb.append(" DELETE FROM accounts")
        		  .append(" WHERE account_num = ?"); 
+//			con.setAutoCommit(false);
 			pstmt = con.prepareStatement(sb.toString());
 			pstmt.setString(1, number);
 			int count = pstmt.executeUpdate();
-			System.out.println(count + " 개의 계좌가 삭제되었습니다.");
-			pstmt.close();
+//			con.commit();
 			return count > 0; // 삭제가 성공한 경우 true 반환
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

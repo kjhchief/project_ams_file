@@ -24,7 +24,7 @@ public class JdbcAccountRepositoryExample {
 			
 			// 계좌번호로 검색
 			System.out.println("----- 계좌 번호로 검색 -----");
-			repository.findByNumber("5555");
+			repository.findByNumber("2222");
 			
 			// 계좌 전체 목록
 			System.out.println("----- 전체 계좌 목록 -----");
@@ -32,7 +32,7 @@ public class JdbcAccountRepositoryExample {
 			
 			// 계좌번호로 삭제
 			System.out.println("----- 삭제된 계좌 -----");
-			boolean removeOrNot = repository.removeAccount("3333-4444-555");
+			boolean removeOrNot = repository.removeAccount("1111-2222-3333");
 			if(removeOrNot) {
 				System.out.println("삭제 성공");
 			} else {
