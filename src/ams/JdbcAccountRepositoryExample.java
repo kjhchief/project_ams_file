@@ -12,8 +12,8 @@ public class JdbcAccountRepositoryExample {
 			int count = repository.getCount();
 			System.out.println("등록된 계좌 수 : " + count);
 
-//			repository.addAccount(new Account("1111-2222-3333", "김재훈", 1111, 70000));
-//			repository.addAccount(new Account("2222-3333-4444", "김말쑥", 1111, 50000));
+			repository.addAccount(new Account("1111-2222-3333", "김재훈", 1111, 70000));
+			repository.addAccount(new Account("2222-3333-4444", "김말쑥", 1111, 50000));
 //			Date rentDate = new Date(System.currentTimeMillis());
 //			repository.addAccount(new MinusAccount("3333-4444-5555", "김철수", 1111, 50000, 10000, rentDate));
 			
@@ -32,7 +32,7 @@ public class JdbcAccountRepositoryExample {
 			
 			// 계좌번호로 삭제
 			System.out.println("----- 삭제된 계좌 -----");
-			boolean removeOrNot = repository.removeAccount("1111-2222-3333");
+			boolean removeOrNot = repository.removeAccount("3333-4444-5555");
 			if(removeOrNot) {
 				System.out.println("삭제 성공");
 			} else {
